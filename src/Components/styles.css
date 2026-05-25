@@ -1,0 +1,17 @@
+
+
+.swiper {
+  width: 925px;
+  height: 100%;
+}
+
+.swiper-slide {
+  font-size: 18px;
+}
+
+.swiper-slide img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}

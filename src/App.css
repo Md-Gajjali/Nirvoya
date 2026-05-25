@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+@theme {
+  --breakpoint-*: initial ;
+  --breakpoint-sm:576px ;
+  --breakpoint-md:768px ;
+  --breakpoint-lg:992px ;
+  --breakpoint-xl:1170px ;
+  --breakpoint-xxl:1401px ;
+  --color-primary: #0970CD;
+  --font-mons: "Montserrat", sans-serif;
+  --font-pop:"Poppins", sans-serif;
+  --color-comon:"#3736367b"
+}
+
+@utility container {
+  width: 100%;
+  max-width: 1401px;
+  margin: auto;
+}
+
+h1{
+  font-family: "Montserrat", sans-serif;
+}
+
+h2,h3,h4,p,span{
+  font-family:"Poppins", sans-serif;
+}
+
+
