@@ -37,7 +37,6 @@ const RoutLayout = () => {
   return (
     <>
       <Navbar />
-      <MegaMenu />
       <Outlet />
     </>
   )
