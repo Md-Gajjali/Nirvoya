@@ -2,19 +2,63 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   value: [],
+  cart: JSON.parse(localStorage.getItem('cartItem')) || [],
+  wishList: JSON.parse(localStorage.getItem('wish')) || [],
+  subTotal: JSON.parse(localStorage.getItem('subTotal')) || 0,
 }
 
 export const ProductSlice = createSlice({
   name: 'All',
   initialState,
   reducers: {
-    AllProductReducer: ( state , action ) => {
-        state.value = action.payload
+    AllProductReducer: (state, action) => {
+      state.value = action.payload
+    },
+    CartReducer: (state, action) => {
+      state.cart = [...state.cart, action.payload]
+      localStorage.setItem('cartItem', JSON.stringify(state.cart))
+    },
+    wishListReducer: (state, action) => {
+      state.wishList = [...state.wishList, action.payload]
+      localStorage.setItem('wish', JSON.stringify(state.wishList))
+    },
+    RemoveReducer: (state ,action) => {
+      state.cart = state.cart.filter((item)=> item.id !== action.payload)
+      localStorage.setItem('cartItem', JSON.stringify(state.cart))
+    },
+    WishListRemoveReducer: (state ,action) => {
+      state.wishList = state.wishList.filter((item)=> item.id !== action.payload)
+      localStorage.setItem('wish', JSON.stringify(state.wishList))
+    },
+     IncrementReducer:(state,action) => {
+      state.cart = state.cart.map((item)=>{
+        return item.id == action.payload ? {...item, quan: item.quan + 1} : item 
+      })
+      localStorage.setItem('cartItem', JSON.stringify(state.cart))
+    },
+    DecrementReducer: (state, action)=> {
+      state.cart = state.cart.map((item)=>{
+        return item.id == action.payload ? {...item, quan: item.quan -1 } : item        
+      })
+      localStorage.setItem('cartItem', JSON.stringify(state.cart))
+    },
+    SubTotalReducer: (state)=> {
+      state.subTotal = state.cart.reduce((current,item)=> current + (item.quan * item.price),0),
+      localStorage.setItem('subTotal' , JSON.stringify(state.subTotal))
     }
-  },
+    
+  }
 })
 
-// Action creators are generated for each case reducer function
-export const { AllProductReducer } =ProductSlice.actions
+export const {
+  AllProductReducer,
+  CartReducer,
+  IncrementReducer,
+  DecrementReducer,
+  wishListReducer,
+  SubTotalReducer,
+  RemoveReducer,
+  WishListRemoveReducer
+} = ProductSlice.actions
 
-export default  ProductSlice.reducer
+export default ProductSlice.reducer

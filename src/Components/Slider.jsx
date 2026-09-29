@@ -15,13 +15,15 @@ import { useSelector } from 'react-redux';
 export default function Slider() {
 
   const { value: product } = useSelector((state) => state.AllProducts)
+
+  const [products , setProducts]= useState("")
+
   useEffect(() => {
     if (product) {
-      console.log("aise", product)
+      setProducts("aise", product)
     }
   }, [product])
 
-  console.log(product)
   return (
     <>
       <Swiper
@@ -38,7 +40,7 @@ export default function Slider() {
                 <div className='flex items-center justify-end '>
                   
                   <div className='absolute  bottom-[116px] left-[60px]'>
-                    <h1 className='w-[445px] font-bold text-[45px] text-primary'>Explore Men’s Winter Collection</h1>
+                    <h1 className='w-[445px] font-bold text-[45px] text-primary'>Explore Woman’s Winter Collection</h1>
                     <p className='w-[418px] font-normal text-[20px] mt-[27px]'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. </p>
                     <BtnCom className='mt-[27px]'>SHOP NOW</BtnCom>
                   </div>

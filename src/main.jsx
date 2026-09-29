@@ -7,6 +7,8 @@ import { RouterProvider } from "react-router/dom";
 import RoutLayout from './RoutLayout.jsx';
 import { Provider } from 'react-redux'
 import { store } from './Store.js';
+import ProductDetails from './Pages/ProductDetails.jsx';
+import CartPage from './Pages/Cart.jsx';
 
 
 const router = createBrowserRouter([
@@ -15,7 +17,8 @@ const router = createBrowserRouter([
     Component: RoutLayout,
     children: [
       { index: true, Component: App },
-      // { path: "about", Component: About },
+      { path: "ProductDetailss/:id", Component: ProductDetails },
+      { path: "CartItem", Component: CartPage },
 
     ],
   },
