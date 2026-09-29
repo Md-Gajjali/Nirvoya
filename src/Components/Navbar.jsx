@@ -221,19 +221,6 @@ const Navbar = () => {
                   </div>
 
                   {/* Dropdown Footer Action */}
-                  {wishProduct.length > 0 && (
-                    <div className="pt-2.5 border-t border-gray-100">
-                      <button
-                        onClick={() => {}}
-                        className="w-full bg-[#1A1A1A] hover:bg-black text-white text-xs font-semibold py-2.5 rounded-xl transition flex items-center justify-center gap-2 shadow-sm"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        Move All to Cart
-                      </button>
-                    </div>
-                  )}
                 </div>
               )}
             </div>

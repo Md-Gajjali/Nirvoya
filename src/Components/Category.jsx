@@ -2,20 +2,22 @@ import React, { useState } from 'react'
 import CommonTItle from './CommonTItle'
 import { useSelector, useDispatch } from 'react-redux'
 import Card from './Card'
+import { CategoryReducer } from '../SliceReducer'
 
 
 const Category = () => {
   const { value: category } = useSelector(state => state.AllProducts)
+  const { cat: FilterCategory } = useSelector(state => state.AllProducts)
+
 
   const [selectedCategory, setSelectedCategory] = useState(null)
 
+   const dispatch = useDispatch()
+
   const handleCategory = (cat) => {
     setSelectedCategory(cat)
+    dispatch(CategoryReducer(cat))
   }
-
-  const filteredProducts = selectedCategory
-    ? category.filter((item) => item.category === selectedCategory)
-    : []
 
   return (
     <div className='container'>
@@ -47,7 +49,7 @@ const Category = () => {
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((item, index) => (
+            {FilterCategory.map((item, index) => (
               <Card
                 img={item.thumbnail}
                 disPar={item.discountPercentage}
