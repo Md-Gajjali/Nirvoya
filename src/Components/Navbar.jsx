@@ -7,12 +7,14 @@ import { CartReducer, RemoveReducer, SubTotalReducer, wishListReducer, WishListR
 // import { removeFromWishlist } from '../redux/slices/wishlistSlice'
 
 const Navbar = () => {
-  const { cart: product = [] } = useSelector((state) => state.AllProducts)
+  const { value: product = [] } = useSelector((state) => state.AllProducts)
   const { wishList: wishProduct = [] } = useSelector((state) => state.AllProducts)
 
+  // console.log(product)
   const [searchTerm, setSearchTerm] = useState('')
   const [isWishlistOpen, setIsWishlistOpen] = useState(false)
   const wishlistRef = useRef(null)
+  const [filterProduct, setFilterProduct] = useState([])
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -24,14 +26,35 @@ const Navbar = () => {
   const handleSearchChange = (e) => {
     const cleanValue = sanitizeInput(e.target.value)
     setSearchTerm(cleanValue)
+
+    const cleanQuery = cleanValue.trim()
+
+    if (!cleanQuery) {
+      setFilterProduct([])
+      return
+    }
+
+    const matchedProducts = product.filter((item) =>
+      item.title?.toLowerCase().includes(cleanQuery.toLowerCase())
+    )
+
+    setFilterProduct(matchedProducts)
   }
 
   const handleSearchSubmit = (e) => {
     e.preventDefault()
     const cleanQuery = searchTerm.trim()
-    if (cleanQuery) {
-      navigate(`/search?q=${encodeURIComponent(cleanQuery)}`)
+
+    if (!cleanQuery) {
+      setFilterProduct([])
+      return
     }
+
+    const matchedProducts = product.filter((item) =>
+      item.title?.toLowerCase().includes(cleanQuery.toLowerCase())
+    )
+
+    setFilterProduct(matchedProducts)
   }
 
   useEffect(() => {
@@ -53,29 +76,28 @@ const Navbar = () => {
 
   const handleAddToCartFromWishlist = (e, item) => {
     e.stopPropagation()
-   const matchItem = product.find((cartItem)=> cartItem.id === item.id)
-   if (!matchItem) {
-    dispatch(CartReducer({ ...item , quan : 1 }))
-    dispatch(SubTotalReducer())
-   }
+    const matchItem = product.find((cartItem) => cartItem.id === item.id)
+    if (!matchItem) {
+      dispatch(CartReducer({ ...item, quan: 1 }))
+      dispatch(SubTotalReducer())
+    }
   }
 
   const handleRemoveFromWishlist = (e, id) => {
     e.stopPropagation()
-    // dispatch(RemoveReducer(id))
     dispatch(WishListRemoveReducer(id))
   }
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur shadow-[0_2px_15px_rgba(0,0,0,0.04)] transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Main Header Container */}
         <div className="flex flex-wrap items-center justify-between gap-y-3 py-3.5 md:py-4">
-          
+
           {/* Logo */}
-          <div 
-            onClick={() => navigate('/')} 
+          <div
+            onClick={() => navigate('/')}
             className="cursor-pointer transition-transform duration-200 hover:opacity-90 active:scale-95"
           >
             <Nirvoya />
@@ -83,31 +105,56 @@ const Navbar = () => {
 
           {/* Desktop Search Bar */}
           <div className="hidden md:flex flex-1 max-w-lg lg:max-w-xl mx-4">
-            <form onSubmit={handleSearchSubmit} className="relative w-full">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                maxLength={60}
-                placeholder="I'm looking for..."
-                className="w-full bg-[#F6F6F6] text-gray-800 text-sm rounded-lg pl-4 pr-12 py-2.5 outline-none border border-transparent focus:border-[#0198E9] focus:bg-white transition-all shadow-inner"
-              />
-              <button
-                type="submit"
-                className="absolute inset-y-0 right-0 flex items-center justify-center w-11 bg-[#0198E9] hover:bg-[#0180C4] text-white rounded-r-lg transition-colors cursor-pointer"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-            </form>
+            <div className="relative w-full">
+              <form onSubmit={handleSearchSubmit} className="w-full">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  maxLength={60}
+                  placeholder="I'm looking for..."
+                  className="w-full bg-[#F6F6F6] text-gray-800 text-sm rounded-lg pl-4 pr-12 py-2.5 outline-none border border-transparent focus:border-[#0198E9] focus:bg-white transition-all shadow-inner"
+                />
+                <button
+                  type="submit"
+                  className="absolute inset-y-0 right-0 flex items-center justify-center w-11 bg-[#0198E9] hover:bg-[#0180C4] text-white rounded-r-lg transition-colors cursor-pointer"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </form>
+
+              {filterProduct.length > 0 && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-72 overflow-y-auto rounded-xl border border-gray-100 bg-white p-2 shadow-[0_18px_40px_rgba(0,0,0,0.12)]">
+                  {filterProduct.slice(0, 6).map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => navigate(`/ProductDetailss/${item.id}`)}
+                      className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition hover:bg-gray-50"
+                    >
+                      <img
+                        src={item.thumbnail || item.image}
+                        alt={item.title}
+                        className="h-10 w-10 rounded-md object-cover"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-gray-800">{item.title}</p>
+                        <p className="text-xs text-[#0198E9] font-semibold">${item.price}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Navigation Action Buttons */}
           <div className="flex items-center gap-3.5 sm:gap-6 lg:gap-8">
-            
+
             {/* Login */}
-            <div 
+            <div
               onClick={() => navigate('/login')}
               className="flex items-center gap-1.5 cursor-pointer text-gray-700 hover:text-[#0198E9] transition-colors group"
             >
@@ -141,7 +188,7 @@ const Navbar = () => {
               {/* Wishlist Dropdown Panel */}
               {isWishlistOpen && (
                 <div className="fixed inset-x-3 top-20 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-3 w-auto sm:w-96 bg-white rounded-2xl shadow-[0_16px_40px_rgba(0,0,0,0.14)] border border-gray-100 p-4 z-50 transform origin-top-right transition-all">
-                  
+
                   {/* Dropdown Header */}
                   <div className="flex justify-between items-center pb-3 border-b border-gray-100">
                     <div className="flex items-center gap-2">
@@ -248,24 +295,49 @@ const Navbar = () => {
 
         {/* Mobile Search Bar (Stacked row below logo) */}
         <div className="md:hidden pb-3">
-          <form onSubmit={handleSearchSubmit} className="relative w-full">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              maxLength={60}
-              placeholder="I'm looking for..."
-              className="w-full bg-[#F6F6F6] text-gray-800 text-xs rounded-lg pl-3.5 pr-11 py-2.5 outline-none border border-transparent focus:border-[#0198E9] focus:bg-white transition-all"
-            />
-            <button
-              type="submit"
-              className="absolute inset-y-0 right-0 flex items-center justify-center w-10 bg-[#0198E9] text-white rounded-r-lg"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-          </form>
+          <div className="relative w-full">
+            <form onSubmit={handleSearchSubmit} className="relative w-full">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                maxLength={60}
+                placeholder="I'm looking for..."
+                className="w-full bg-[#F6F6F6] text-gray-800 text-xs rounded-lg pl-3.5 pr-11 py-2.5 outline-none border border-transparent focus:border-[#0198E9] focus:bg-white transition-all"
+              />
+              <button
+                type="submit"
+                className="absolute inset-y-0 right-0 flex items-center justify-center w-10 bg-[#0198E9] text-white rounded-r-lg"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </form>
+
+            {/* {filterProduct.length > 0 && (
+              <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-gray-100 bg-white p-2 shadow-[0_18px_40px_rgba(0,0,0,0.12)]">
+                {filterProduct.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => navigate(`/ProductDetailss/${item.id}`)}
+                    className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition hover:bg-gray-50"
+                  >
+                    <img
+                      src={item.thumbnail || item.image}
+                      alt={item.title}
+                      className="h-9 w-9 rounded-md object-cover"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-medium text-gray-800">{item.title}</p>
+                      <p className="text-[11px] text-[#0198E9] font-semibold">${item.price}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )} */}
+          </div>
         </div>
 
       </div>
